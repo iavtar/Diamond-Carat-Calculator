@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Gems From Jaipur - Calculator</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/fontawesome/4.7.0/css/font-awesome.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/css/calculator.css}"/>
+</head>
+<title>File Upload</title>
+<script>
+    async function uploadFile(event) {
+        event.preventDefault(); // Prevent form from submitting traditionally
+        const responseDiv = document.getElementById('response');
+        responseDiv.innerHTML = '';
+        const unusedDiv = document.getElementById('unused');
+        unusedDiv.innerHTML = '';
+        const fileInput = document.getElementById('file');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("Please select a file to upload.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch(location.protocol + '//' + location.hostname + ':' + location.port + '/api/v1/dc/cal', {
+                method: 'POST',
+                body: formData,
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const result = await response.json(); // Assuming server responds with text
+            console.log(result.totalGems);
+            document.getElementById('response').innerHTML += `<div class="d-flex align-items-center"><span><i class="fa fa-diamond"></span></i><h6 class="mb-0 ms-2">Total Gems: ${result.totalGems}</h6></div>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `<div class="d-flex align-items-center"><span><i class="fa fa-balance-scale"></span></i><h6 class="mb-0 ms-2">Total Weight : ${result.totalWeight}</h6></div>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `<hr/>`;
+            document.getElementById('response').innerHTML += `<b>0.50-2.30</b>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Gems : ${result.metaResponse["0.50-2.30"].totalGems}`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Weight : ${result.metaResponse["0.50-2.30"].totalWeight}`;
+            document.getElementById('response').innerHTML += `<hr/>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `<b>2.40-2.75</b>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Gems : ${result.metaResponse["2.40-2.75"].totalGems}`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Weight : ${result.metaResponse["2.40-2.75"].totalWeight}`;
+            document.getElementById('response').innerHTML += `<hr/>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `<b>2.80-3.30</b>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Gems : ${result.metaResponse["2.80-3.30"].totalGems}`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Weight : ${result.metaResponse["2.80-3.30"].totalWeight}`;
+            document.getElementById('response').innerHTML += `<hr/>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `<b>Above-3.30</b>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Gems : ${result.metaResponse["Above-3.30"].totalGems}`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('response').innerHTML += `Total Weight : ${result.metaResponse["Above-3.30"].totalWeight}`;
+            document.getElementById('response').innerHTML += `<hr/>`;
+            document.getElementById('response').innerHTML += `<br/>`;
+            document.getElementById('unused').innerHTML += `<b>Unused Values</b>`;
+            document.getElementById('unused').innerHTML += `<br/>`;
+            for(let i = 0; i < result.unused.length; i++) {
+                document.getElementById('unused').innerHTML += `Cut Type : ${result.unused[i].cutType}, Quantity :  ${result.unused[i].diamondQuantity} , Size: ${result.unused[i].size}`;
+                document.getElementById('unused').innerHTML += `<hr/>`;
+            }
+        } catch (error) {
+            document.getElementById('response').innerText = `Error: ${error.message}`;
+        }
+    }
+</script>
+</head>
+<body>
+<div th:insert="~{layout :: navigation}"></div>
+<div>
+    <div class="row">
+        <div class="col-md-2">
+            <div th:insert="~{layout :: left-sidebar}" class="left-sidebar position-sticky top-0"></div>
+        </div>
+        <div class="col-md-3 card mx-2 section" style="width: 25rem; max-height: 700px; overflow-y: auto;">
+            <div class="mt-5">
+                <form onsubmit="uploadFile(event)">
+                    <label for="file">Choose a file:</label>
+                    <input type="file" id="file" name="file" required />
+                    <br><br>
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-3 card mx-3 section" style="width: 25rem; max-height: 700px; overflow-y: auto;">
+            <div id="response" class="mt-5">
+            </div>
+        </div>
+        <div class="col-md card mx-3 section" style="width: 25rem; max-height: 700px; overflow-y: auto;">
+            <div id="unused" class="mt-5">
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div th:insert="~{layout :: left-sidebar}" class="left-sidebar col-md-2"></div>-->
+<br>
+<div th:insert="~{layout :: footer}"></div>
+</body>
+</html>
